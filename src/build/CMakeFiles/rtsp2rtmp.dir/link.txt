@@ -1,1 +1,0 @@
-/usr/bin/c++  -g -o0  -std=c++11 CMakeFiles/rtsp2rtmp.dir/TransStream/TransStream.cpp.o CMakeFiles/rtsp2rtmp.dir/Rtsp2Rtmp.cpp.o -o rtsp2rtmp  -lavcodec -lavformat -lavutil -lpthread 

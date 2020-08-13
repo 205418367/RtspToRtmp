@@ -1,11 +1,0 @@
---2020-08-13 09:32:42--  https://file.wx2.qq.com/cgi-bin/mmwebwx-bin/webwxgetmedia?sender=@59714c2a73e4b568d29ee1367d9df9a6c7f3ec5c1f57771a5d3bd09d3697f744
-正在解析主机 file.wx2.qq.com (file.wx2.qq.com)... 182.254.34.87, 121.51.176.179, 2408:8756:3af0:10::104, ...
-正在连接 file.wx2.qq.com (file.wx2.qq.com)|182.254.34.87|:443... 已连接。
-已发出 HTTP 请求，正在等待回应... 200 OK
-长度： 0 [application/octet-stream]
-正在保存至: “webwxgetmedia?sender=@59714c2a73e4b568d29ee1367d9df9a6c7f3ec5c1f57771a5d3bd09d3697f744”
-
-          webwxgetm     [<=>                 ]       0  --.-KB/s               webwxgetmedia?sende     [ <=>                ]       0  --.-KB/s    用时 0s    
-
-2020-08-13 09:32:43 (0.00 B/s) - 已保存 “webwxgetmedia?sender=@59714c2a73e4b568d29ee1367d9df9a6c7f3ec5c1f57771a5d3bd09d3697f744” [0/0])
-
