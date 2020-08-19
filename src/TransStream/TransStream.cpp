@@ -49,7 +49,7 @@ void TransStream::Init()
 {
     if(!ffmpeg_inited_){
        av_register_all();
-	   avformat_network_init();
+       avformat_network_init();
        ffmpeg_inited_ = true;
     }
 }
@@ -184,10 +184,11 @@ int TransStream::WritePacket(AVPacket* packet)
 	return av_interleaved_write_frame(output_context_, packet);
 }
 
+//用一个线程去执行TransStream类的ThreadTransStream成员函数
 int TransStream::Start(const char* output_url)
 {
     bool stop = true;
-    do{
+    do{ //unique_lock的有效范围在do{}while()循环体内
         std::unique_lock<std::mutex> lock(mutex_stop_);
         stop = stop_;
     }while(false);
@@ -195,7 +196,6 @@ int TransStream::Start(const char* output_url)
     if(false == stop){
         return ERROR_REALVIDEO_ALREADY_STARTED;
     }
-
     if(nullptr != output_url){
         memcpy(addr_param_.output_rtmp_addr,output_url,strlen(output_url) + 1);
     }
@@ -203,7 +203,7 @@ int TransStream::Start(const char* output_url)
         return ERROR_PARAM;
     }
 
-    Init();
+    Init();//ffmpeg初始化
     int ret = OpenInput();
     if(ret != RET_OK){
         return ret;
@@ -212,11 +212,13 @@ int TransStream::Start(const char* output_url)
     if(ret != RET_OK){
         return ret;
     }
+    //unique_lock析构时解锁
     std::unique_lock<std::mutex> lock(mutex_stop_);
     stop_ = false;
+    //lock.unlock(); //临时解锁
+    //lock.lock();   //临时上锁
     std::thread thr_trans_stream(&TransStream::ThreadTransStream,this);
     thr_trans_stream.detach();
-//  thread_capture_ = new std::thread(&TransStream::ThreadTransStream,this);
     return RET_OK;
 }
 
@@ -273,7 +275,7 @@ int TransStream::CapturePicture(const char* pic_path)
 
     //1、如果没有实时浏览视频
     if(stop){ 
-        Init();
+        Init();//ffmpeg初始化
         int ret = OpenInput();
         if(ret != RET_OK){
             return ret;
@@ -287,7 +289,6 @@ int TransStream::CapturePicture(const char* pic_path)
         }
         std::thread thr_relay_capture(&TransStream::ThreadRelyCapurePic,this);
         thr_relay_capture.detach();
-//      thread_capture_ = new std::thread(&TransStream::ThreadRelyCapurePic,this);
     }
     //2、如果正在实时浏览
     else{
@@ -302,12 +303,12 @@ int TransStream::CapturePicture(const char* pic_path)
         capture_ = true;
         std::thread thr_alone_capture(&TransStream::ThreadAloneCapurePic,this);
         thr_alone_capture.detach();
-//      thread_capture_ = new std::thread(&TransStream::ThreadAloneCapurePic,this);
     }
     std::unique_lock<std::mutex> lock(mutex_synchro_capture_);
     cond_param_capture_ = false;
-
     auto fun = [&]()->bool{return cond_param_capture_ == true;};
+    //wait_for 可以指定一个时间段，在当前线程收到通知或者指定的时间 rel_time 超时之前，该线程都会处于阻塞状态。
+    //而一旦超时或者收到了其他线程的通知，wait_for 返回true。fun为预测条件。
     if(cond_synchro_capture_.wait_for(lock, std::chrono::milliseconds(capture_timeout*1000), fun)){    
         std::unique_lock<std::mutex> lock_capture(mutex_capture_);
         capture_  = false;

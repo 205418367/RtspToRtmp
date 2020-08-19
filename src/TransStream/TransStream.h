@@ -61,7 +61,7 @@ private:
     int video_index_;//只处理视频，忽略音频
     char* capture_path_;
     std::string record_file_;//录像文件
-	std::mutex mutex_stop_;
+    std::mutex mutex_stop_;
     std::mutex mutex_capture_;
     std::mutex mutex_record_;
     std::thread* thread_capture_;
@@ -71,7 +71,7 @@ private:
     CallBackFunction callback_fun_;
 
     std::mutex mutex_synchro_capture_;
-    std::condition_variable cond_synchro_capture_;
+    std::condition_variable cond_synchro_capture_;//条件变量
     bool cond_param_capture_;
 
     std::mutex mutex_synchro_stop_;
